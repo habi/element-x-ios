@@ -25,7 +25,7 @@ class MockClientProxy: ClientProxyProtocol {
     let isSoftLogout = false
     let deviceId: String? = nil
     let homeserver = ""
-    let restorationToken: RestorationToken? = nil
+    let session: Session? = nil
     
     var visibleRoomsSummaryProvider: RoomSummaryProviderProtocol? = MockRoomSummaryProvider()
     

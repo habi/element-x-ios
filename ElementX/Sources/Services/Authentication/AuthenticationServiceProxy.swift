@@ -21,12 +21,16 @@ import MatrixRustSDK
 class AuthenticationServiceProxy: AuthenticationServiceProxyProtocol {
     private let authenticationService: AuthenticationService
     private let userSessionStore: UserSessionStoreProtocol
+    private let databaseKey: Data
     
     private(set) var homeserver = LoginHomeserver(address: ServiceLocator.shared.settings.defaultHomeserverAddress, loginMode: .unknown)
     
     init(userSessionStore: UserSessionStoreProtocol) {
+        let databaseKey = EncryptionKeyProvider.generateKey() // TODO: Dependency injection?
+        self.databaseKey = databaseKey
         self.userSessionStore = userSessionStore
-        authenticationService = AuthenticationService(basePath: userSessionStore.baseDirectory.path, passphrase: nil)
+        authenticationService = AuthenticationService(basePath: userSessionStore.baseDirectory.path,
+                                                      passphrase: String(databaseKey.base64EncodedString().dropFirst(10))) // FIXME: Hack until we can pass key data
     }
     
     // MARK: - Public
@@ -121,7 +125,7 @@ class AuthenticationServiceProxy: AuthenticationServiceProxyProtocol {
     // MARK: - Private
     
     private func userSession(for client: Client) async -> Result<UserSessionProtocol, AuthenticationServiceError> {
-        switch await userSessionStore.userSession(for: client) {
+        switch await userSessionStore.userSession(for: client, databaseKey: databaseKey) {
         case .success(let clientProxy):
             return .success(clientProxy)
         case .failure:

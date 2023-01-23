@@ -19,6 +19,7 @@ import MatrixRustSDK
 
 struct RestorationToken: Codable, Equatable {
     let session: MatrixRustSDK.Session
+    let databaseKey: Data
 }
 
 extension MatrixRustSDK.Session: Codable {

@@ -119,11 +119,11 @@ class ClientProxy: ClientProxyProtocol {
         client.homeserver()
     }
 
-    var restorationToken: RestorationToken? {
+    var session: Session? {
         do {
-            return try RestorationToken(session: client.session())
+            return try client.session()
         } catch {
-            MXLog.error("Failed retrieving restore token with error: \(error)")
+            MXLog.error("Failed retrieving the client's session with error: \(error)")
             return nil
         }
     }
