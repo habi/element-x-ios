@@ -138,4 +138,13 @@ class MockClientProxy: ClientProxyProtocol {
         getProfileCalled = true
         return getProfileResult
     }
+    
+    func notificationSettingsManager() -> NotificationSettingsManagerProxyProtocol {
+        let mock = NotificationSettingsManagerProxyMock()
+        let roomNotificationSettingsProxyMock = RoomNotificationSettingsProxyMock()
+        roomNotificationSettingsProxyMock.mode = .allMessages
+        roomNotificationSettingsProxyMock.isDefault = true
+        mock.getNotificationModeRoomReturnValue = roomNotificationSettingsProxyMock
+        return mock
+    }
 }

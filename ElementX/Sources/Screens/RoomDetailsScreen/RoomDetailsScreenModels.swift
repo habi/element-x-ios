@@ -43,6 +43,7 @@ struct RoomDetailsScreenViewState: BindableState {
     var joinedMembersCount = 0
     var isProcessingIgnoreRequest = false
     var canInviteUsers = false
+    var notificationMode: RoomNotificationSettingsProxyProtocol?
     
     var isLoadingMembers: Bool {
         members.isEmpty
@@ -54,6 +55,31 @@ struct RoomDetailsScreenViewState: BindableState {
 
     private var isDMRoom: Bool {
         isEncrypted && isDirect && members.count == 2
+    }
+    
+    var isLoadingNotificationSettings: Bool {
+        notificationMode == nil
+    }
+    
+    var notificationModeDescription: String {
+        guard let notificationMode else {
+            return ""
+        }
+        let mode: String
+        switch notificationMode.mode {
+        case .allMessages:
+            mode = UntranslatedL10n.notificationsRoomModeAllMessages
+        case .mentionsAndKeywordsOnly:
+            mode = UntranslatedL10n.notificationsRoomModeMentionsAndKeywords
+        case .mute:
+            mode = UntranslatedL10n.notificationsRoomModeMute
+        }
+
+        if notificationMode.isDefault {
+            return UntranslatedL10n.notificationsRoomModeDefault(mode)
+        } else {
+            return mode
+        }
     }
 }
 
@@ -133,6 +159,7 @@ enum RoomDetailsScreenViewAction {
     case confirmLeave
     case ignoreConfirmed
     case unignoreConfirmed
+    case processTapNotifications
 }
 
 enum RoomDetailsScreenErrorType: Hashable {

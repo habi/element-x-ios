@@ -22,6 +22,7 @@ struct RoomDetailsScreenCoordinatorParameters {
     let roomProxy: RoomProxyProtocol
     let mediaProvider: MediaProviderProtocol
     let userDiscoveryService: UserDiscoveryServiceProtocol
+    let notificationSettingsManager: NotificationSettingsManagerProxyProtocol
 }
 
 enum RoomDetailsScreenCoordinatorAction {
@@ -44,7 +45,8 @@ final class RoomDetailsScreenCoordinator: CoordinatorProtocol {
         self.parameters = parameters
         
         viewModel = RoomDetailsScreenViewModel(roomProxy: parameters.roomProxy,
-                                               mediaProvider: parameters.mediaProvider)
+                                               mediaProvider: parameters.mediaProvider,
+                                               notificationSettingsManagerProxy: parameters.notificationSettingsManager)
     }
     
     // MARK: - Public

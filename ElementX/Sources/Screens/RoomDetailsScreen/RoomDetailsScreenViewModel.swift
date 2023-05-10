@@ -21,6 +21,7 @@ typealias RoomDetailsScreenViewModelType = StateStoreViewModel<RoomDetailsScreen
 
 class RoomDetailsScreenViewModel: RoomDetailsScreenViewModelType, RoomDetailsScreenViewModelProtocol {
     private let roomProxy: RoomProxyProtocol
+    private var notificationSettingsManagerProxy: NotificationSettingsManagerProxyProtocol?
     private var members: [RoomMemberProxyProtocol] = []
     private var dmRecipient: RoomMemberProxyProtocol?
     
@@ -30,8 +31,10 @@ class RoomDetailsScreenViewModel: RoomDetailsScreenViewModelType, RoomDetailsScr
     var callback: ((RoomDetailsScreenViewModelAction) -> Void)?
 
     init(roomProxy: RoomProxyProtocol,
-         mediaProvider: MediaProviderProtocol) {
+         mediaProvider: MediaProviderProtocol,
+         notificationSettingsManagerProxy: NotificationSettingsManagerProxyProtocol) {
         self.roomProxy = roomProxy
+        self.notificationSettingsManagerProxy = notificationSettingsManagerProxy
         super.init(initialViewState: .init(roomId: roomProxy.id,
                                            canonicalAlias: roomProxy.canonicalAlias,
                                            isEncrypted: roomProxy.isEncrypted,
@@ -40,13 +43,29 @@ class RoomDetailsScreenViewModel: RoomDetailsScreenViewModelType, RoomDetailsScr
                                            topic: roomProxy.topic,
                                            avatarURL: roomProxy.avatarURL,
                                            permalink: roomProxy.permalink,
+                                           notificationMode: nil,
                                            bindings: .init()),
                    imageProvider: mediaProvider)
         
         setupSubscriptions()
 
+        notificationSettingsManagerProxy.callbacks
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] callback in
+                guard let self else { return }
+                
+                switch callback {
+                case .notificationSettingsDidChange:
+                    Task {
+                        self.state.notificationMode = try await notificationSettingsManagerProxy.getNotificationMode(room: roomProxy)
+                    }
+                }
+            }
+            .store(in: &cancellables)
+                
         Task {
             await roomProxy.updateMembers()
+            self.state.notificationMode = try await notificationSettingsManagerProxy.getNotificationMode(room: roomProxy)
         }
     }
     
@@ -75,6 +94,8 @@ class RoomDetailsScreenViewModel: RoomDetailsScreenViewModelType, RoomDetailsScr
             Task { await ignore() }
         case .unignoreConfirmed:
             Task { await unignore() }
+        case .processTapNotifications:
+            break
         }
     }
     

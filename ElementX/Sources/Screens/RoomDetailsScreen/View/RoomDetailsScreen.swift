@@ -32,6 +32,8 @@ struct RoomDetailsScreen: View {
             if context.viewState.dmRecipient == nil {
                 aboutSection
             }
+            
+            notificationSection
 
             securitySection
 
@@ -146,6 +148,31 @@ struct RoomDetailsScreen: View {
         .disabled(context.viewState.isLoadingMembers)
     }
 
+    private var notificationSection: some View {
+        Section {
+            Button {
+                context.send(viewAction: .processTapNotifications)
+            } label: {
+                LabeledContent {
+                    if context.viewState.isLoadingNotificationSettings {
+                        ProgressView()
+                    } else {
+                        Text(context.viewState.notificationModeDescription)
+                            .foregroundColor(.element.tertiaryContent)
+                            .font(.compound.bodyLG)
+                    }
+                } label: {
+                    Label(UntranslatedL10n.notifications, systemImage: "bell")
+                }
+            }
+            .accessibilityIdentifier(A11yIdentifiers.roomDetailsScreen.notifications)
+        }
+        .listRowSeparatorTint(.element.quinaryContent)
+        .buttonStyle(FormButtonStyle(accessory: context.viewState.isLoadingNotificationSettings ? nil : .navigationLink))
+        .foregroundColor(.element.primaryContent)
+        .disabled(context.viewState.isLoadingNotificationSettings)
+    }
+    
     @ViewBuilder
     private var securitySection: some View {
         if context.viewState.isEncrypted {
@@ -238,8 +265,15 @@ struct RoomDetailsScreen_Previews: PreviewProvider {
                                                   canonicalAlias: "#alias:domain.com",
                                                   members: members))
         
+        let notificationSettingsManagerProxy = NotificationSettingsManagerProxyMock()
+        let roomNotificationModeProxy = RoomNotificationSettingsProxyMock()
+        roomNotificationModeProxy.isDefault = true
+        roomNotificationModeProxy.mode = .allMessages
+        notificationSettingsManagerProxy.getNotificationModeRoomReturnValue = roomNotificationModeProxy
+        
         return RoomDetailsScreenViewModel(roomProxy: roomProxy,
-                                          mediaProvider: MockMediaProvider())
+                                          mediaProvider: MockMediaProvider(),
+                                          notificationSettingsManagerProxy: notificationSettingsManagerProxy)
     }()
     
     static let dmRoomViewModel = {
@@ -255,8 +289,15 @@ struct RoomDetailsScreen_Previews: PreviewProvider {
                                                   canonicalAlias: "#alias:domain.com",
                                                   members: members))
         
+        let notificationSettingsManagerProxy = NotificationSettingsManagerProxyMock()
+        let roomNotificationModeProxy = RoomNotificationSettingsProxyMock()
+        roomNotificationModeProxy.isDefault = true
+        roomNotificationModeProxy.mode = .allMessages
+        notificationSettingsManagerProxy.getNotificationModeRoomReturnValue = roomNotificationModeProxy
+        
         return RoomDetailsScreenViewModel(roomProxy: roomProxy,
-                                          mediaProvider: MockMediaProvider())
+                                          mediaProvider: MockMediaProvider(),
+                                          notificationSettingsManagerProxy: notificationSettingsManagerProxy)
     }()
     
     static var previews: some View {

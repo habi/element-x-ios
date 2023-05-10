@@ -158,23 +158,39 @@ class MockScreen: Identifiable {
             return OnboardingCoordinator()
         case .roomPlainNoAvatar:
             let navigationStackCoordinator = NavigationStackCoordinator()
+            
+            let notificationSettingsManagerProxy = NotificationSettingsManagerProxyMock()
+            let roomNotificationModeProxy = RoomNotificationSettingsProxyMock()
+            roomNotificationModeProxy.isDefault = true
+            roomNotificationModeProxy.mode = .allMessages
+            notificationSettingsManagerProxy.getNotificationModeRoomReturnValue = roomNotificationModeProxy
+            
             let parameters = RoomScreenCoordinatorParameters(navigationStackCoordinator: navigationStackCoordinator,
                                                              roomProxy: RoomProxyMock(with: .init(displayName: "Some room name", avatarURL: nil)),
                                                              timelineController: MockRoomTimelineController(),
                                                              mediaProvider: MockMediaProvider(),
                                                              emojiProvider: EmojiProvider(),
-                                                             userDiscoveryService: UserDiscoveryServiceMock())
+                                                             userDiscoveryService: UserDiscoveryServiceMock(),
+                                                             notificationSettingsProxy: notificationSettingsManagerProxy)
             let coordinator = RoomScreenCoordinator(parameters: parameters)
             navigationStackCoordinator.setRootCoordinator(coordinator)
             return navigationStackCoordinator
         case .roomEncryptedWithAvatar:
             let navigationStackCoordinator = NavigationStackCoordinator()
+            
+            let notificationSettingsManagerProxy = NotificationSettingsManagerProxyMock()
+            let roomNotificationModeProxy = RoomNotificationSettingsProxyMock()
+            roomNotificationModeProxy.isDefault = true
+            roomNotificationModeProxy.mode = .allMessages
+            notificationSettingsManagerProxy.getNotificationModeRoomReturnValue = roomNotificationModeProxy
+            
             let parameters = RoomScreenCoordinatorParameters(navigationStackCoordinator: navigationStackCoordinator,
                                                              roomProxy: RoomProxyMock(with: .init(displayName: "Some room name", avatarURL: URL.picturesDirectory)),
                                                              timelineController: MockRoomTimelineController(),
                                                              mediaProvider: MockMediaProvider(),
                                                              emojiProvider: EmojiProvider(),
-                                                             userDiscoveryService: UserDiscoveryServiceMock())
+                                                             userDiscoveryService: UserDiscoveryServiceMock(),
+                                                             notificationSettingsProxy: notificationSettingsManagerProxy)
             let coordinator = RoomScreenCoordinator(parameters: parameters)
             navigationStackCoordinator.setRootCoordinator(coordinator)
             return navigationStackCoordinator
@@ -182,12 +198,20 @@ class MockScreen: Identifiable {
             let navigationStackCoordinator = NavigationStackCoordinator()
             let timelineController = MockRoomTimelineController()
             timelineController.timelineItems = RoomTimelineItemFixtures.smallChunk
+            
+            let notificationSettingsManagerProxy = NotificationSettingsManagerProxyMock()
+            let roomNotificationModeProxy = RoomNotificationSettingsProxyMock()
+            roomNotificationModeProxy.isDefault = true
+            roomNotificationModeProxy.mode = .allMessages
+            notificationSettingsManagerProxy.getNotificationModeRoomReturnValue = roomNotificationModeProxy
+            
             let parameters = RoomScreenCoordinatorParameters(navigationStackCoordinator: navigationStackCoordinator,
                                                              roomProxy: RoomProxyMock(with: .init(displayName: "New room", avatarURL: URL.picturesDirectory)),
                                                              timelineController: timelineController,
                                                              mediaProvider: MockMediaProvider(),
                                                              emojiProvider: EmojiProvider(),
-                                                             userDiscoveryService: UserDiscoveryServiceMock())
+                                                             userDiscoveryService: UserDiscoveryServiceMock(),
+                                                             notificationSettingsProxy: notificationSettingsManagerProxy)
             let coordinator = RoomScreenCoordinator(parameters: parameters)
             navigationStackCoordinator.setRootCoordinator(coordinator)
             return navigationStackCoordinator
@@ -198,12 +222,20 @@ class MockScreen: Identifiable {
             timelineController.timelineItems = RoomTimelineItemFixtures.smallChunk
             timelineController.backPaginationResponses = [RoomTimelineItemFixtures.singleMessageChunk]
             timelineController.incomingItems = [RoomTimelineItemFixtures.incomingMessage]
+            
+            let notificationSettingsManagerProxy = NotificationSettingsManagerProxyMock()
+            let roomNotificationModeProxy = RoomNotificationSettingsProxyMock()
+            roomNotificationModeProxy.isDefault = true
+            roomNotificationModeProxy.mode = .allMessages
+            notificationSettingsManagerProxy.getNotificationModeRoomReturnValue = roomNotificationModeProxy
+            
             let parameters = RoomScreenCoordinatorParameters(navigationStackCoordinator: navigationStackCoordinator,
                                                              roomProxy: RoomProxyMock(with: .init(displayName: "Small timeline", avatarURL: URL.picturesDirectory)),
                                                              timelineController: timelineController,
                                                              mediaProvider: MockMediaProvider(),
                                                              emojiProvider: EmojiProvider(),
-                                                             userDiscoveryService: UserDiscoveryServiceMock())
+                                                             userDiscoveryService: UserDiscoveryServiceMock(),
+                                                             notificationSettingsProxy: notificationSettingsManagerProxy)
             let coordinator = RoomScreenCoordinator(parameters: parameters)
             
             navigationStackCoordinator.setRootCoordinator(coordinator)
@@ -214,12 +246,20 @@ class MockScreen: Identifiable {
             let timelineController = MockRoomTimelineController(listenForSignals: true)
             timelineController.timelineItems = RoomTimelineItemFixtures.smallChunk
             timelineController.backPaginationResponses = [RoomTimelineItemFixtures.largeChunk]
+            
+            let notificationSettingsManagerProxy = NotificationSettingsManagerProxyMock()
+            let roomNotificationModeProxy = RoomNotificationSettingsProxyMock()
+            roomNotificationModeProxy.isDefault = true
+            roomNotificationModeProxy.mode = .allMessages
+            notificationSettingsManagerProxy.getNotificationModeRoomReturnValue = roomNotificationModeProxy
+            
             let parameters = RoomScreenCoordinatorParameters(navigationStackCoordinator: navigationStackCoordinator,
                                                              roomProxy: RoomProxyMock(with: .init(displayName: "Small timeline, paginating", avatarURL: URL.picturesDirectory)),
                                                              timelineController: timelineController,
                                                              mediaProvider: MockMediaProvider(),
                                                              emojiProvider: EmojiProvider(),
-                                                             userDiscoveryService: UserDiscoveryServiceMock())
+                                                             userDiscoveryService: UserDiscoveryServiceMock(),
+                                                             notificationSettingsProxy: notificationSettingsManagerProxy)
             let coordinator = RoomScreenCoordinator(parameters: parameters)
             
             navigationStackCoordinator.setRootCoordinator(coordinator)
@@ -230,12 +270,20 @@ class MockScreen: Identifiable {
             let timelineController = MockRoomTimelineController(listenForSignals: true)
             timelineController.timelineItems = RoomTimelineItemFixtures.largeChunk
             timelineController.backPaginationResponses = [RoomTimelineItemFixtures.largeChunk]
+            
+            let notificationSettingsManagerProxy = NotificationSettingsManagerProxyMock()
+            let roomNotificationModeProxy = RoomNotificationSettingsProxyMock()
+            roomNotificationModeProxy.isDefault = true
+            roomNotificationModeProxy.mode = .allMessages
+            notificationSettingsManagerProxy.getNotificationModeRoomReturnValue = roomNotificationModeProxy
+            
             let parameters = RoomScreenCoordinatorParameters(navigationStackCoordinator: navigationStackCoordinator,
                                                              roomProxy: RoomProxyMock(with: .init(displayName: "Large timeline", avatarURL: URL.picturesDirectory)),
                                                              timelineController: timelineController,
                                                              mediaProvider: MockMediaProvider(),
                                                              emojiProvider: EmojiProvider(),
-                                                             userDiscoveryService: UserDiscoveryServiceMock())
+                                                             userDiscoveryService: UserDiscoveryServiceMock(),
+                                                             notificationSettingsProxy: notificationSettingsManagerProxy)
             let coordinator = RoomScreenCoordinator(parameters: parameters)
 
             navigationStackCoordinator.setRootCoordinator(coordinator)
@@ -247,12 +295,20 @@ class MockScreen: Identifiable {
             timelineController.timelineItems = RoomTimelineItemFixtures.largeChunk
             timelineController.backPaginationResponses = [RoomTimelineItemFixtures.largeChunk]
             timelineController.incomingItems = [RoomTimelineItemFixtures.incomingMessage]
+            
+            let notificationSettingsManagerProxy = NotificationSettingsManagerProxyMock()
+            let roomNotificationModeProxy = RoomNotificationSettingsProxyMock()
+            roomNotificationModeProxy.isDefault = true
+            roomNotificationModeProxy.mode = .allMessages
+            notificationSettingsManagerProxy.getNotificationModeRoomReturnValue = roomNotificationModeProxy
+            
             let parameters = RoomScreenCoordinatorParameters(navigationStackCoordinator: navigationStackCoordinator,
                                                              roomProxy: RoomProxyMock(with: .init(displayName: "Large timeline", avatarURL: URL.picturesDirectory)),
                                                              timelineController: timelineController,
                                                              mediaProvider: MockMediaProvider(),
                                                              emojiProvider: EmojiProvider(),
-                                                             userDiscoveryService: UserDiscoveryServiceMock())
+                                                             userDiscoveryService: UserDiscoveryServiceMock(),
+                                                             notificationSettingsProxy: notificationSettingsManagerProxy)
             let coordinator = RoomScreenCoordinator(parameters: parameters)
             
             navigationStackCoordinator.setRootCoordinator(coordinator)
@@ -263,12 +319,20 @@ class MockScreen: Identifiable {
             let timelineController = MockRoomTimelineController(listenForSignals: true)
             timelineController.timelineItems = RoomTimelineItemFixtures.largeChunk
             timelineController.incomingItems = [RoomTimelineItemFixtures.incomingMessage]
+            
+            let notificationSettingsManagerProxy = NotificationSettingsManagerProxyMock()
+            let roomNotificationModeProxy = RoomNotificationSettingsProxyMock()
+            roomNotificationModeProxy.isDefault = true
+            roomNotificationModeProxy.mode = .allMessages
+            notificationSettingsManagerProxy.getNotificationModeRoomReturnValue = roomNotificationModeProxy
+            
             let parameters = RoomScreenCoordinatorParameters(navigationStackCoordinator: navigationStackCoordinator,
                                                              roomProxy: RoomProxyMock(with: .init(displayName: "Large timeline", avatarURL: URL.picturesDirectory)),
                                                              timelineController: timelineController,
                                                              mediaProvider: MockMediaProvider(),
                                                              emojiProvider: EmojiProvider(),
-                                                             userDiscoveryService: UserDiscoveryServiceMock())
+                                                             userDiscoveryService: UserDiscoveryServiceMock(),
+                                                             notificationSettingsProxy: notificationSettingsManagerProxy)
             let coordinator = RoomScreenCoordinator(parameters: parameters)
             
             navigationStackCoordinator.setRootCoordinator(coordinator)
@@ -299,10 +363,18 @@ class MockScreen: Identifiable {
                                                       displayName: "Room",
                                                       isEncrypted: true,
                                                       members: members))
+            
+            let notificationSettingsManagerProxy = NotificationSettingsManagerProxyMock()
+            let roomNotificationModeProxy = RoomNotificationSettingsProxyMock()
+            roomNotificationModeProxy.isDefault = true
+            roomNotificationModeProxy.mode = .allMessages
+            notificationSettingsManagerProxy.getNotificationModeRoomReturnValue = roomNotificationModeProxy
+            
             let coordinator = RoomDetailsScreenCoordinator(parameters: .init(navigationStackCoordinator: navigationStackCoordinator,
                                                                              roomProxy: roomProxy,
                                                                              mediaProvider: MockMediaProvider(),
-                                                                             userDiscoveryService: UserDiscoveryServiceMock()))
+                                                                             userDiscoveryService: UserDiscoveryServiceMock(),
+                                                                             notificationSettingsManager: notificationSettingsManagerProxy))
             navigationStackCoordinator.setRootCoordinator(coordinator)
             return navigationStackCoordinator
         case .roomDetailsScreenWithRoomAvatar:
@@ -315,10 +387,18 @@ class MockScreen: Identifiable {
                                                       isEncrypted: true,
                                                       canonicalAlias: "#mock:room.org",
                                                       members: members))
+            
+            let notificationSettingsManagerProxy = NotificationSettingsManagerProxyMock()
+            let roomNotificationModeProxy = RoomNotificationSettingsProxyMock()
+            roomNotificationModeProxy.isDefault = true
+            roomNotificationModeProxy.mode = .allMessages
+            notificationSettingsManagerProxy.getNotificationModeRoomReturnValue = roomNotificationModeProxy
+            
             let coordinator = RoomDetailsScreenCoordinator(parameters: .init(navigationStackCoordinator: navigationStackCoordinator,
                                                                              roomProxy: roomProxy,
                                                                              mediaProvider: MockMediaProvider(),
-                                                                             userDiscoveryService: UserDiscoveryServiceMock()))
+                                                                             userDiscoveryService: UserDiscoveryServiceMock(),
+                                                                             notificationSettingsManager: notificationSettingsManagerProxy))
             navigationStackCoordinator.setRootCoordinator(coordinator)
             return navigationStackCoordinator
         case .roomDetailsScreenWithInvite:
@@ -329,10 +409,18 @@ class MockScreen: Identifiable {
                                                       displayName: "Room",
                                                       isEncrypted: true,
                                                       members: members))
+            
+            let notificationSettingsManagerProxy = NotificationSettingsManagerProxyMock()
+            let roomNotificationModeProxy = RoomNotificationSettingsProxyMock()
+            roomNotificationModeProxy.isDefault = true
+            roomNotificationModeProxy.mode = .allMessages
+            notificationSettingsManagerProxy.getNotificationModeRoomReturnValue = roomNotificationModeProxy
+            
             let coordinator = RoomDetailsScreenCoordinator(parameters: .init(navigationStackCoordinator: navigationStackCoordinator,
                                                                              roomProxy: roomProxy,
                                                                              mediaProvider: MockMediaProvider(),
-                                                                             userDiscoveryService: UserDiscoveryServiceMock()))
+                                                                             userDiscoveryService: UserDiscoveryServiceMock(),
+                                                                             notificationSettingsManager: notificationSettingsManagerProxy))
             navigationStackCoordinator.setRootCoordinator(coordinator)
             return navigationStackCoordinator
         case .roomMembersListScreen:
@@ -403,10 +491,18 @@ class MockScreen: Identifiable {
                                                       isDirect: true,
                                                       isEncrypted: true,
                                                       members: members))
+            
+            let notificationSettingsManagerProxy = NotificationSettingsManagerProxyMock()
+            let roomNotificationModeProxy = RoomNotificationSettingsProxyMock()
+            roomNotificationModeProxy.isDefault = true
+            roomNotificationModeProxy.mode = .allMessages
+            notificationSettingsManagerProxy.getNotificationModeRoomReturnValue = roomNotificationModeProxy
+            
             let coordinator = RoomDetailsScreenCoordinator(parameters: .init(navigationStackCoordinator: navigationStackCoordinator,
                                                                              roomProxy: roomProxy,
                                                                              mediaProvider: MockMediaProvider(),
-                                                                             userDiscoveryService: UserDiscoveryServiceMock()))
+                                                                             userDiscoveryService: UserDiscoveryServiceMock(),
+                                                                             notificationSettingsManager: notificationSettingsManagerProxy))
             navigationStackCoordinator.setRootCoordinator(coordinator)
             return navigationStackCoordinator
         case .invitesWithBadges:

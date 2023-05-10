@@ -10,6 +10,18 @@ import Foundation
 // swiftlint:disable explicit_type_interface function_parameter_count identifier_name line_length
 // swiftlint:disable nesting type_body_length type_name vertical_whitespace_opening_braces
 public enum UntranslatedL10n {
+  /// Notifications
+  public static var notifications: String { return UntranslatedL10n.tr("Untranslated", "notifications") }
+  /// All messages
+  public static var notificationsRoomModeAllMessages: String { return UntranslatedL10n.tr("Untranslated", "notifications_room_mode_all_messages") }
+  /// Default (%1$s)
+  public static func notificationsRoomModeDefault(_ p1: UnsafePointer<CChar>) -> String {
+    return UntranslatedL10n.tr("Untranslated", "notifications_room_mode_default", p1)
+  }
+  /// Mentions and keywords
+  public static var notificationsRoomModeMentionsAndKeywords: String { return UntranslatedL10n.tr("Untranslated", "notifications_room_mode_mentions_and_keywords") }
+  /// Mute
+  public static var notificationsRoomModeMute: String { return UntranslatedL10n.tr("Untranslated", "notifications_room_mode_mute") }
   /// Clear all data currently stored on this device?
   /// Sign in again to access your account data and messages.
   public static var softLogoutClearDataDialogContent: String { return UntranslatedL10n.tr("Untranslated", "soft_logout_clear_data_dialog_content") }

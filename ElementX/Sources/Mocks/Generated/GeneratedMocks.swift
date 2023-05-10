@@ -293,6 +293,79 @@ class NotificationManagerMock: NotificationManagerProtocol {
         requestAuthorizationClosure?()
     }
 }
+class NotificationSettingsManagerProxyMock: NotificationSettingsManagerProxyProtocol {
+    var callbacks: PassthroughSubject<NotificationSettingsManagerProxyCallback, Never> {
+        get { return underlyingCallbacks }
+        set(value) { underlyingCallbacks = value }
+    }
+    var underlyingCallbacks: PassthroughSubject<NotificationSettingsManagerProxyCallback, Never>!
+
+    //MARK: - getNotificationMode
+
+    var getNotificationModeRoomThrowableError: Error?
+    var getNotificationModeRoomCallsCount = 0
+    var getNotificationModeRoomCalled: Bool {
+        return getNotificationModeRoomCallsCount > 0
+    }
+    var getNotificationModeRoomReceivedRoom: RoomProxyProtocol?
+    var getNotificationModeRoomReceivedInvocations: [RoomProxyProtocol] = []
+    var getNotificationModeRoomReturnValue: RoomNotificationSettingsProxyProtocol!
+    var getNotificationModeRoomClosure: ((RoomProxyProtocol) async throws -> RoomNotificationSettingsProxyProtocol)?
+
+    func getNotificationMode(room: RoomProxyProtocol) async throws -> RoomNotificationSettingsProxyProtocol {
+        if let error = getNotificationModeRoomThrowableError {
+            throw error
+        }
+        getNotificationModeRoomCallsCount += 1
+        getNotificationModeRoomReceivedRoom = room
+        getNotificationModeRoomReceivedInvocations.append(room)
+        if let getNotificationModeRoomClosure = getNotificationModeRoomClosure {
+            return try await getNotificationModeRoomClosure(room)
+        } else {
+            return getNotificationModeRoomReturnValue
+        }
+    }
+    //MARK: - setNotificationMode
+
+    var setNotificationModeRoomModeThrowableError: Error?
+    var setNotificationModeRoomModeCallsCount = 0
+    var setNotificationModeRoomModeCalled: Bool {
+        return setNotificationModeRoomModeCallsCount > 0
+    }
+    var setNotificationModeRoomModeReceivedArguments: (room: RoomProxyProtocol, mode: RoomNotificationMode)?
+    var setNotificationModeRoomModeReceivedInvocations: [(room: RoomProxyProtocol, mode: RoomNotificationMode)] = []
+    var setNotificationModeRoomModeClosure: ((RoomProxyProtocol, RoomNotificationMode) async throws -> Void)?
+
+    func setNotificationMode(room: RoomProxyProtocol, mode: RoomNotificationMode) async throws {
+        if let error = setNotificationModeRoomModeThrowableError {
+            throw error
+        }
+        setNotificationModeRoomModeCallsCount += 1
+        setNotificationModeRoomModeReceivedArguments = (room: room, mode: mode)
+        setNotificationModeRoomModeReceivedInvocations.append((room: room, mode: mode))
+        try await setNotificationModeRoomModeClosure?(room, mode)
+    }
+    //MARK: - restoreDefaultNotificationMode
+
+    var restoreDefaultNotificationModeRoomThrowableError: Error?
+    var restoreDefaultNotificationModeRoomCallsCount = 0
+    var restoreDefaultNotificationModeRoomCalled: Bool {
+        return restoreDefaultNotificationModeRoomCallsCount > 0
+    }
+    var restoreDefaultNotificationModeRoomReceivedRoom: RoomProxyProtocol?
+    var restoreDefaultNotificationModeRoomReceivedInvocations: [RoomProxyProtocol] = []
+    var restoreDefaultNotificationModeRoomClosure: ((RoomProxyProtocol) async throws -> Void)?
+
+    func restoreDefaultNotificationMode(room: RoomProxyProtocol) async throws {
+        if let error = restoreDefaultNotificationModeRoomThrowableError {
+            throw error
+        }
+        restoreDefaultNotificationModeRoomCallsCount += 1
+        restoreDefaultNotificationModeRoomReceivedRoom = room
+        restoreDefaultNotificationModeRoomReceivedInvocations.append(room)
+        try await restoreDefaultNotificationModeRoomClosure?(room)
+    }
+}
 class RoomMemberProxyMock: RoomMemberProxyProtocol {
     var userID: String {
         get { return underlyingUserID }
@@ -371,6 +444,19 @@ class RoomMemberProxyMock: RoomMemberProxyProtocol {
             return unignoreUserReturnValue
         }
     }
+}
+class RoomNotificationSettingsProxyMock: RoomNotificationSettingsProxyProtocol {
+    var mode: RoomNotificationMode {
+        get { return underlyingMode }
+        set(value) { underlyingMode = value }
+    }
+    var underlyingMode: RoomNotificationMode!
+    var isDefault: Bool {
+        get { return underlyingIsDefault }
+        set(value) { underlyingIsDefault = value }
+    }
+    var underlyingIsDefault: Bool!
+
 }
 class RoomProxyMock: RoomProxyProtocol {
     var id: String {

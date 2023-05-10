@@ -77,6 +77,8 @@ class ClientProxy: ClientProxyProtocol {
     var invitesSummaryProvider: RoomSummaryProviderProtocol?
 
     var notificationsListBuilder: SlidingSyncListBuilder?
+    
+    var notificationsSettingsListBuilder: SlidingSyncListBuilder?
 
     private var loadCachedAvatarURLTask: Task<Void, Never>?
     private let avatarURLSubject = CurrentValueSubject<URL?, Never>(nil)
@@ -349,6 +351,10 @@ class ClientProxy: ClientProxyProtocol {
         }
     }
     
+    func notificationSettingsManager() -> NotificationSettingsManagerProxyProtocol {
+        NotificationSettingsManagerProxy(notificationSettingsManagerProxy: client.getNotificationSettingsManager())
+    }
+    
     // MARK: Private
 
     private func loadUserAvatarURLFromCache() {
@@ -382,6 +388,7 @@ class ClientProxy: ClientProxyProtocol {
             if ServiceLocator.shared.settings.enableLocalPushNotifications {
                 buildAndConfigureNotificationsSlidingSyncList()
             }
+            buildAndConfigureNotificationsSettingsSlidingSyncList()
             
             guard let visibleRoomsListBuilder else {
                 MXLog.error("Visible rooms sliding sync view unavailable")
@@ -501,6 +508,20 @@ class ClientProxy: ClientProxyProtocol {
         
         self.notificationsListBuilder = notificationsListBuilder
     }
+    
+    private func buildAndConfigureNotificationsSettingsSlidingSyncList() {
+        guard notificationsSettingsListBuilder == nil else {
+            fatalError("This shouldn't be called more than once")
+        }
+        
+        let notificationsSettingsListBuilder = SlidingSyncListBuilder(name: "NotificationsSettings")
+            .noTimelineLimit()
+            .requiredState(requiredState: slidingSyncNotificationsSettingsRequiredState)
+            .filters(filters: slidingSyncNotificationsSettingsFilters)
+            .syncModeGrowing(batchSize: 100, maximumNumberOfRoomsToFetch: nil)
+        
+        self.notificationsSettingsListBuilder = notificationsSettingsListBuilder
+    }
 
     private func buildRoomSummaryProviders() {
         guard visibleRoomsSummaryProvider == nil, allRoomsSummaryProvider == nil, invitesSummaryProvider == nil else {
@@ -532,6 +553,8 @@ class ClientProxy: ClientProxyProtocol {
     private lazy var slidingSyncNotificationsRequiredState = [RequiredState(key: "m.room.member", value: "$ME"),
                                                               RequiredState(key: "m.room.power_levels", value: ""),
                                                               RequiredState(key: "m.room.name", value: "")]
+    
+    private lazy var slidingSyncNotificationsSettingsRequiredState = [RequiredState(key: "m.room.push_rules", value: "")]
     
     private lazy var slidingSyncInvitesRequiredState = [RequiredState(key: "m.room.avatar", value: ""),
                                                         RequiredState(key: "m.room.encryption", value: ""),
@@ -570,6 +593,17 @@ class ClientProxy: ClientProxyProtocol {
                                                                               roomNameLike: nil,
                                                                               tags: [],
                                                                               notTags: [])
+    
+    private lazy var slidingSyncNotificationsSettingsFilters = SlidingSyncRequestListFilters(isDm: nil,
+                                                                                             spaces: [],
+                                                                                             isEncrypted: nil,
+                                                                                             isInvite: nil,
+                                                                                             isTombstoned: false,
+                                                                                             roomTypes: [],
+                                                                                             notRoomTypes: ["m.space"],
+                                                                                             roomNameLike: nil,
+                                                                                             tags: [],
+                                                                                             notTags: [])
     
     private func configureViewsPostInitialSync() {
         if let visibleRoomsListProxy {
