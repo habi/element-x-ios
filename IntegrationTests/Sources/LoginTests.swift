@@ -42,10 +42,10 @@ class LoginTests: XCTestCase {
         
         XCTAssertTrue(getStartedButton.waitForExistence(timeout: 10.0))
         getStartedButton.tap()
-
-        let editHomeserverButton = app.buttons[A11yIdentifiers.loginScreen.changeServer]
-        XCTAssertTrue(editHomeserverButton.waitForExistence(timeout: 10.0))
-        editHomeserverButton.tap()
+        
+        let changeHomeserverButton = app.buttons[A11yIdentifiers.serverConfirmationScreen.changeServer]
+        XCTAssertTrue(changeHomeserverButton.waitForExistence(timeout: 10.0))
+        changeHomeserverButton.tap()
         
         let homeserverTextField = app.textFields[A11yIdentifiers.changeServerScreen.server]
         XCTAssertTrue(homeserverTextField.waitForExistence(timeout: 10.0))
