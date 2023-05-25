@@ -63,12 +63,14 @@ struct ServerConfirmationScreen: View {
                 Text(L10n.actionContinue)
             }
             .buttonStyle(.elementAction(.xLarge))
+            .accessibilityIdentifier(A11yIdentifiers.serverConfirmationScreen.continue)
             
             Button { context.send(viewAction: .changeServer) } label: {
                 Text(L10n.screenServerConfirmationChangeServer)
                     .font(.compound.bodyLGSemibold)
                     .padding(.vertical, 14)
             }
+            .accessibilityIdentifier(A11yIdentifiers.serverConfirmationScreen.changeServer)
         }
     }
 }
