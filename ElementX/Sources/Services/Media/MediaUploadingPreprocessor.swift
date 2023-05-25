@@ -41,6 +41,29 @@ enum MediaInfo {
     case video(videoURL: URL, thumbnailURL: URL, videoInfo: VideoInfo)
     case audio(audioURL: URL, audioInfo: AudioInfo)
     case file(fileURL: URL, fileInfo: FileInfo)
+    
+    var mimeType: String? {
+        switch self {
+        case .image(_, _, let imageInfo):
+            return imageInfo.mimetype
+        case .video(_, _, let videoInfo):
+            return videoInfo.mimetype
+        case .audio(_, let audioInfo):
+            return audioInfo.mimetype
+        case .file(_, let fileInfo):
+            return fileInfo.mimetype
+        }
+    }
+    
+    var mainURL: URL {
+        switch self {
+        case .image(let url, _, _),
+             .video(let url, _, _),
+             .audio(let url, _),
+             .file(let url, _):
+            return url
+        }
+    }
 }
 
 private struct ImageProcessingInfo {
