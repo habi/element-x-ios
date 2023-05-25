@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+import Combine
 import SwiftUI
 
 @MainActor
@@ -25,6 +26,8 @@ protocol AuthenticationCoordinatorDelegate: AnyObject {
 class AuthenticationCoordinator: CoordinatorProtocol {
     private let authenticationService: AuthenticationServiceProxyProtocol
     private let navigationStackCoordinator: NavigationStackCoordinator
+    
+    private var cancellables: Set<AnyCancellable> = []
     
     weak var delegate: AuthenticationCoordinatorDelegate?
     
@@ -64,7 +67,7 @@ class AuthenticationCoordinator: CoordinatorProtocol {
         switch await authenticationService.configure(for: ServiceLocator.shared.settings.defaultHomeserverAddress) {
         case .success:
             stopLoading()
-            showLoginScreen()
+            showServerConfirmationScreen()
         case .failure:
             stopLoading()
             showServerSelectionScreen()
@@ -91,9 +94,28 @@ class AuthenticationCoordinator: CoordinatorProtocol {
         navigationStackCoordinator.push(coordinator)
     }
     
+    private func showServerConfirmationScreen() {
+        let parameters = ServerConfirmationScreenCoordinatorParameters(homeserverAddress: authenticationService.homeserver.address,
+                                                                       authenticationType: .login)
+        let coordinator = ServerConfirmationScreenCoordinator(parameters: parameters)
+        
+        coordinator.actions.sink { [weak self] action in
+            guard let self else { return }
+            
+            switch action {
+            case .confirm:
+                self.showLoginScreen()
+            case .changeServer:
+                self.showServerSelectionScreen()
+            }
+        }
+        .store(in: &cancellables)
+        
+        navigationStackCoordinator.push(coordinator)
+    }
+    
     private func showLoginScreen() {
-        let parameters = LoginScreenCoordinatorParameters(authenticationService: authenticationService,
-                                                          navigationStackCoordinator: navigationStackCoordinator)
+        let parameters = LoginScreenCoordinatorParameters(authenticationService: authenticationService)
         let coordinator = LoginScreenCoordinator(parameters: parameters)
         
         coordinator.callback = { [weak self] action in
